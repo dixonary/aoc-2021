@@ -12,7 +12,7 @@ import qualified Data.Vector as Vec
 import qualified Util.Util as U
 
 import qualified Program.RunDay as R (runDay, Day)
-import Data.Attoparsec.Text
+import Data.Attoparsec.Text hiding (take)
 import Data.Void
 {- ORMOLU_ENABLE -}
 
@@ -20,20 +20,13 @@ runDay :: R.Day
 runDay = R.runDay inputParser partA partB
 
 ------------ PARSER ------------
-inputParser :: Parser Input
-inputParser = error "Not implemented yet!"
-
------------- TYPES ------------
-type Input = Void
-
-type OutputA = Void
-
-type OutputB = Void
+inputParser :: Parser [Int]
+inputParser = decimal `sepBy` skipSpace
 
 ------------ PART A ------------
-partA :: Input -> OutputA
-partA = error "Not implemented yet!"
+partA :: [Int] -> Int
+partA xs = length $ filter id $ zipWith (<) xs (tail xs)
 
 ------------ PART B ------------
-partB :: Input -> OutputB
-partB = error "Not implemented yet!"
+partB :: [Int] -> Int
+partB = partA . fmap (sum . take 3) . tails 
