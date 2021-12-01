@@ -29,4 +29,4 @@ partA xs = length $ filter id $ zipWith (<) xs (tail xs)
 
 ------------ PART B ------------
 partB :: [Int] -> Int
-partB = partA . fmap (sum . take 3) . tails 
+partB = partA . map (sum . take 3) . tails 
