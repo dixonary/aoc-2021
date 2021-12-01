@@ -1,12 +1,6 @@
-# aoc-template
+# aoc-2021
 
-This is an (opinionated) Advent of Code template for solutions in Haskell.
-
-To use:
-- Clone this repository
-- Set up a new branch for the year's solutions
-- Change the package name, update the GitHub link, etc. You'll also want to remove the .cabal file and let stack generate a new one.
-- Fill in the solutions and have fun!
+Advent of Code 2021 solutions in Haskell
 
 When running from the command line you can pass the option `-d/--day DAY` to run a specific day's solutions. If you do this, then you can also pass `-i/--input FILE` to specify an input file; by default, the program will look for it in `input/DayXX.txt`. You can also pass the argument `--all-days` and all days will be run in order, assuming the input files are in their default places.
 
