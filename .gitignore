@@ -3,4 +3,4 @@
 stack.yaml.lock
 dist-newstyle/*
 .gitattributes
-aoc-template.cabal
+*.cabal
