@@ -1,10 +1,10 @@
 name:                aoc-template
 version:             2021.0
-github:              "samcoy3/advent-of-code-template"
+github:              "dixonary/aoc-2021"
 license:             BSD3
-author:              "Sam Coy"
-maintainer:          "samcoy3@gmail.com"
-copyright:           "2021 Sam Coy"
+author:              "Alex Dixon"
+maintainer:          "alex@dixonary.co.uk"
+copyright:           "2021 Alex Dixon"
 
 extra-source-files:
 - README.md
@@ -16,7 +16,7 @@ extra-source-files:
 # To avoid duplicated efforts in documentation and dealing with the
 # complications of embedding Haddock markup inside cabal files, it is
 # common to point users to the README.md file.
-description:         A template for Advent of Code projects in Haskell
+description: Solutions to Advent of Code 2021 in Haskell
 
 dependencies:
 - base >= 4.7 && < 5
