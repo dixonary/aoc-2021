@@ -73,3 +73,17 @@ mapBoundingBox m =
     (maximum . fmap fst . Map.keys $ m)
     (minimum . fmap snd . Map.keys $ m)
     (maximum . fmap snd . Map.keys $ m)
+
+-- Tuples
+
+fst3 :: (a -> d) -> (a, b, c) -> (d, b, c)
+fst3 f (a, b, c) = (f a, b, c)
+
+snd3 :: (b -> d) -> (a, b, c) -> (a, d, c)
+snd3 f (a, b, c) = (a, f b, c)
+
+third3 :: (c -> d) -> (a, b, c) -> (a, b, d)
+third3 f (a, b, c) = (a, b, f c)
+
+uncurry3 :: (a -> b -> c -> d) -> (a, b, c) -> d
+uncurry3 f (a, b, c) = f a b c
