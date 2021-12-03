@@ -4,6 +4,7 @@ module Util.Util where
 import Data.Map.Strict (Map)
 import qualified Data.Map.Strict as Map
 import Debug.Trace (trace)
+import Data.Bifunctor
 {- ORMOLU_ENABLE -}
 
 {-
@@ -74,9 +75,21 @@ mapBoundingBox m =
     (minimum . fmap snd . Map.keys $ m)
     (maximum . fmap snd . Map.keys $ m)
 
+
+converge :: Eq a => (a -> a) -> a -> a
+converge = until =<< ((==) =<<)
+
 -- Tuples
 
-pair x = (x,x)
+pairWith :: (a -> b) -> [a] -> [(a,b)]
+pairWith f = fmap (\x -> (x,f x))
+
+
+pair :: a -> (a,a)
+pair x = (x,x) 
+
+both :: Bifunctor x => (a -> b) -> x a a -> x b b 
+both f = bimap f f
 
 fst3 :: (a -> d) -> (a, b, c) -> (d, b, c)
 fst3 f (a, b, c) = (f a, b, c)
@@ -90,3 +103,8 @@ third3 f (a, b, c) = (a, b, f c)
 uncurry3 :: (a -> b -> c -> d) -> (a, b, c) -> d
 uncurry3 f (a, b, c) = f a b c
 
+-- Lists
+
+isSingleton :: [a] -> Bool
+isSingleton [_] = True
+isSingleton _   = False
