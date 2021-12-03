@@ -56,9 +56,9 @@ partB :: Input -> Int
 partB xs = getRating (==) * getRating (/=)
   where
     getRating crit = fromBinary . fst . head 
-                   $ until isSingleton getRating'
+                   $ until isSingleton reduceByMode
                    $ map pair xs
       where
-        getRating' :: [([Int], [Int])] -> [([Int], [Int])]
-        getRating' rs = map (second tail) $ filter (keep . head . snd) rs
-          where keep = crit . mode $ map (head . snd) rs
+        reduceByMode :: [([Int], [Int])] -> [([Int], [Int])]
+        reduceByMode rs = map (second tail) $ filter (keep . head . snd) rs
+          where keep = crit (mode $ map (head . snd) rs)
