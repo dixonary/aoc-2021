@@ -54,18 +54,18 @@ fromBinary :: [Int] -> Int
 fromBinary = foldl1' (\a x -> a*2+x)
 
 ------------ PART B ------------
-partB :: Input -> Int
-partB xs = oxygenRating * co2Rating
-  where
-    oxygenRating = getRating
-                 $ \case {[m] -> (== m); [0,1] -> (== 1)}
-                 
-    co2Rating    = getRating
-                 $ \case {[m] -> (/= m); [0,1] -> (== 0)}
 
-    getRating crit = fromBinary $ head $ head $ filter ((== 1).length) 
-                   $ scanl' getRating' xs [0..length (head xs) - 1]
+partB :: Input -> Int
+partB xs = getRating oxyCrit * getRating co2Crit
+  where
+    oxyCrit modes = case modes of {[m] -> (== m); [0,1] -> (== 1)}
+    co2Crit modes = case modes of {[m] -> (/= m); [0,1] -> (== 0)}
+
+    getRating crit = fromBinary $ fromJust $ asum
+                   $ map (\case { [(b,_)] -> Just b; _ -> Nothing })
+                   $ iterate getRating' (map pair xs)
       where
-        getRating' rem i = 
-          let mi = map modes (transpose rem) !! i
-          in filter (crit mi . (!!i)) rem
+        getRating' :: [([Int], [Int])] -> [([Int], [Int])]
+        getRating' xs =
+          map (second tail) $ filter (crit ms . head . snd) xs
+          where ms = modes (map (head . snd) xs)

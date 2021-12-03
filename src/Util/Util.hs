@@ -76,6 +76,8 @@ mapBoundingBox m =
 
 -- Tuples
 
+pair x = (x,x)
+
 fst3 :: (a -> d) -> (a, b, c) -> (d, b, c)
 fst3 f (a, b, c) = (f a, b, c)
 
@@ -87,3 +89,4 @@ third3 f (a, b, c) = (a, b, f c)
 
 uncurry3 :: (a -> b -> c -> d) -> (a, b, c) -> d
 uncurry3 f (a, b, c) = f a b c
+
