@@ -41,14 +41,14 @@ type Input = [[Int]]
 partA :: Input -> Int
 partA = uncurry (*) 
       . (fromBinary &&& fromBinary . map (1-)) 
-      . map (head.modes) 
+      . map mode
       . transpose
 
-modes :: [Int] -> [Int]
-modes = freq >>> \f -> case compare (f Map.! 0) (f Map.! 1) of
-  LT -> [1]
-  GT -> [0]
-  EQ -> [0,1]
+mode :: [Int] -> Int
+mode = freq >>> \f -> case compare (f Map.! 0) (f Map.! 1) of
+  LT -> 1
+  GT -> 0
+  EQ -> 1
 
 fromBinary :: [Int] -> Int
 fromBinary = foldl1' (\a x -> a*2+x)
@@ -56,15 +56,12 @@ fromBinary = foldl1' (\a x -> a*2+x)
 ------------ PART B ------------
 
 partB :: Input -> Int
-partB xs = getRating oxyCrit * getRating co2Crit
+partB xs = getRating (==) * getRating (/=)
   where
-    oxyCrit modes = case modes of {[m] -> (== m); [0,1] -> (== 1)}
-    co2Crit modes = case modes of {[m] -> (/= m); [0,1] -> (== 0)}
-
     getRating crit = fromBinary . fst . head 
                    $ until isSingleton getRating'
                    $ map pair xs
       where
         getRating' :: [([Int], [Int])] -> [([Int], [Int])]
-        getRating' rs = map (second tail) $ filter (crit ms . head . snd) rs
-          where ms = modes (map (head . snd) rs)
+        getRating' rs = map (second tail) $ filter (keep . head . snd) rs
+          where keep = crit . mode $ map (head . snd) rs
