@@ -61,11 +61,10 @@ partB xs = getRating oxyCrit * getRating co2Crit
     oxyCrit modes = case modes of {[m] -> (== m); [0,1] -> (== 1)}
     co2Crit modes = case modes of {[m] -> (/= m); [0,1] -> (== 0)}
 
-    getRating crit = fromBinary $ fromJust $ asum
-                   $ map (\case { [(b,_)] -> Just b; _ -> Nothing })
-                   $ iterate getRating' (map pair xs)
+    getRating crit = fromBinary . fst . head 
+                   $ until isSingleton getRating'
+                   $ map pair xs
       where
         getRating' :: [([Int], [Int])] -> [([Int], [Int])]
-        getRating' xs =
-          map (second tail) $ filter (crit ms . head . snd) xs
-          where ms = modes (map (head . snd) xs)
+        getRating' rs = map (second tail) $ filter (crit ms . head . snd) rs
+          where ms = modes (map (head . snd) rs)
