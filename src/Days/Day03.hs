@@ -45,13 +45,10 @@ partA = uncurry (*)
       . transpose
 
 mode :: [Int] -> Int
-mode = freq >>> \f -> case compare (f Map.! 0) (f Map.! 1) of
-  LT -> 1
-  GT -> 0
-  EQ -> 1
+mode = freq >>> \f -> fromEnum $ f Map.! 1 >= f Map.! 0
 
 fromBinary :: [Int] -> Int
-fromBinary = foldl1' (\a x -> a*2+x)
+fromBinary = foldl1' (\a x -> a * 2 + x)
 
 ------------ PART B ------------
 
