@@ -108,3 +108,15 @@ uncurry3 f (a, b, c) = f a b c
 isSingleton :: [a] -> Bool
 isSingleton [_] = True
 isSingleton _   = False
+
+
+-- Looping
+
+-- | A looping operation, where the predicate returns 'Left' as a seed for the next loop
+--   or 'Right' to abort the loop.
+--
+-- > loop (\x -> if x < 10 then Left $ x * 2 else Right $ show x) 1 == "16"
+loop :: (a -> Either a b) -> a -> b
+loop act x = case act x of
+    Left x -> loop act x
+    Right v -> v
