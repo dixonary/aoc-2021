@@ -65,6 +65,7 @@ markBoards selectBoard (s:ss, bs)
   where 
     mbs = fmap (markBoard s) bs
 
+markBoard :: Int -> Board -> Board
 markBoard s (Board b) 
   = Board [ [(x,m') | (x,m) <- r, let m' = m || x == s] | r <- b]
 
