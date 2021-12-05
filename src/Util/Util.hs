@@ -124,4 +124,5 @@ loop act x = case act x of
 range :: (Num a, Enum a, Ord a) => a -> a -> [a]
 range x y = if y >= x then [x..y] else [x,x-1..y]
 
+(...) :: (Num a, Enum a, Ord a) => a -> a -> [a]
 (...) = range
