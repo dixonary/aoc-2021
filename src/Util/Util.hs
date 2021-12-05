@@ -121,5 +121,5 @@ loop act x = case act x of
     Left x -> loop act x
     Right v -> v
 
-range :: (Enum a, Ord a) => a -> a -> [a]
-range x y = if y >= x then [x..y] else [y..x]
+range :: (Num a, Enum a, Ord a) => a -> a -> [a]
+range x y = if y >= x then [x..y] else [x,x-1..y]

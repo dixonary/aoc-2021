@@ -35,15 +35,13 @@ type Line = ((Int,Int),(Int,Int))
 partA :: Input -> Int
 partA = partB . filter isOrthog
 
-isOrthog, isLeadingDiag :: Line -> Bool
-isOrthog      ((x1,y1),(x2,y2)) = (x1 == x2) || (y1 == y2)
-isLeadingDiag ((x1,y1),(x2,y2)) = (x2 >= x1) == (y2 >= y1)
+isOrthog :: Line -> Bool
+isOrthog ((x1,y1),(x2,y2)) = (x1 == x2) || (y1 == y2)
 
 ------------ PART B ------------
 partB :: Input -> Int
 partB = length . Map.filter (>=2) . freq . foldMap line
   where 
     line l@((x1,y1),(x2,y2))
-      | isOrthog      l = (,) <$> range x1 x2 <*>           range y1 y2
-      | isLeadingDiag l = zip    (range x1 x2)   (          range y1 y2)
-      | otherwise       = zip    (range x1 x2)   (reverse $ range y1 y2) 
+      | isOrthog      l = (,) <$> range x1 x2 <*> range y1 y2
+      | otherwise       = zip    (range x1 x2)   (range y1 y2) 
