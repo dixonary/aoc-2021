@@ -10,7 +10,7 @@ import qualified Data.Set as Set
 import Data.Vector (Vector)
 import qualified Data.Vector as Vec
 import Util.Util as U
-import Data.Semigroup
+import Data.Function
 
 import qualified Program.RunDay as R (runDay, Day)
 import Data.Attoparsec.Text
@@ -29,17 +29,16 @@ type Input = [Int]
 
 
 ------------ SHARED ------------
-newtype Grow = Grow { grow :: Map Int Int -> Map Int Int }
-instance Semigroup Grow where Grow x <> Grow y = Grow $ x . y
-
-step :: Grow
-step = Grow (Map.fromListWith (+) . concatMap step' . Map.assocs)
-  where 
-    step' (0,n) = [(6,n), (8,n)]
-    step' (t,n) = [(t-1,n)]
+step :: Map Int Int -> Map Int Int
+step m = 
+  let zeroes = Map.findWithDefault 0 0 m
+  in m & Map.delete 0
+       & Map.mapKeys (subtract 1)
+       & Map.insert 8 zeroes
+       & Map.insertWith (+) 6 zeroes 
 
 afterSteps :: [Int] -> Int -> Int
-afterSteps fs count = sum $ (grow $ count `stimes` step) $ freq fs
+afterSteps fs n = sum $ step `fpow` n $ freq fs
 
 
 ------------ PART A ------------
