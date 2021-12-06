@@ -9,7 +9,7 @@ import Data.Set (Set)
 import qualified Data.Set as Set
 import Data.Vector (Vector)
 import qualified Data.Vector as Vec
-import qualified Util.Util as U
+import Util.Util as U
 
 import qualified Program.RunDay as R (runDay, Day)
 import Data.Attoparsec.Text
@@ -21,19 +21,25 @@ runDay = R.runDay inputParser partA partB
 
 ------------ PARSER ------------
 inputParser :: Parser Input
-inputParser = error "Not implemented yet!"
+inputParser = decimal `sepBy` char ','
 
 ------------ TYPES ------------
-type Input = Void
+type Input = [Int]
 
-type OutputA = Void
-
-type OutputB = Void
 
 ------------ PART A ------------
-partA :: Input -> OutputA
-partA = error "Not implemented yet!"
+partA :: Input -> Int
+partA fs = counts fs !! 80
+
+counts :: [Int] -> [Int]
+counts = map sum . iterate step . freq
+
+step :: Map Int Int -> Map Int Int
+step = Map.fromListWith (+) . concatMap step' . Map.assocs
+  where 
+    step' (0,n) = [(6,n), (8,n)]
+    step' (t,n) = [(t-1,n)]
 
 ------------ PART B ------------
-partB :: Input -> OutputB
-partB = error "Not implemented yet!"
+partB :: Input -> Int
+partB fs = counts fs !! 256
