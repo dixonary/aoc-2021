@@ -126,3 +126,8 @@ range x y = if y >= x then [x..y] else [x,x-1..y]
 
 (...) :: (Num a, Enum a, Ord a) => a -> a -> [a]
 (...) = range
+
+
+-- FUNCTIONS
+fpow :: (a -> a) -> Int -> a -> a
+fpow f n = foldr1 (.) $ replicate n f
