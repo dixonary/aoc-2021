@@ -29,9 +29,6 @@ type Input = [Int]
 
 
 ------------ SHARED ------------
--- counts :: [Int] -> [Int]
--- counts = map sum . iterate step . freq
-
 newtype Grow = Grow { grow :: Map Int Int -> Map Int Int }
 instance Semigroup Grow where Grow x <> Grow y = Grow $ x . y
 
@@ -44,9 +41,11 @@ step = Grow (Map.fromListWith (+) . concatMap step' . Map.assocs)
 afterSteps :: [Int] -> Int -> Int
 afterSteps fs count = sum $ (grow $ count `stimes` step) $ freq fs
 
+
 ------------ PART A ------------
 partA :: Input -> Int
 partA fs = fs `afterSteps` 80
+
 
 ------------ PART B ------------
 partB :: Input -> Int
