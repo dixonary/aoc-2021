@@ -27,10 +27,7 @@ inputParser = decimal `sepBy` char ','
 type Input = [Int]
 
 
------------- PART A ------------
-partA :: Input -> Int
-partA fs = counts fs !! 80
-
+------------ SHARED ------------
 counts :: [Int] -> [Int]
 counts = map sum . iterate step . freq
 
@@ -39,6 +36,12 @@ step = Map.fromListWith (+) . concatMap step' . Map.assocs
   where 
     step' (0,n) = [(6,n), (8,n)]
     step' (t,n) = [(t-1,n)]
+
+
+------------ PART A ------------
+partA :: Input -> Int
+partA fs = counts fs !! 80
+
 
 ------------ PART B ------------
 partB :: Input -> Int
