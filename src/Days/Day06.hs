@@ -10,6 +10,7 @@ import qualified Data.Set as Set
 import Data.Vector (Vector)
 import qualified Data.Vector as Vec
 import Util.Util as U
+import Data.Semigroup
 
 import qualified Program.RunDay as R (runDay, Day)
 import Data.Attoparsec.Text
@@ -28,21 +29,26 @@ type Input = [Int]
 
 
 ------------ SHARED ------------
-counts :: [Int] -> [Int]
-counts = map sum . iterate step . freq
+-- counts :: [Int] -> [Int]
+-- counts = map sum . iterate step . freq
 
-step :: Map Int Int -> Map Int Int
-step = Map.fromListWith (+) . concatMap step' . Map.assocs
+newtype Grow = Grow { grow :: Map Int Int -> Map Int Int }
+instance Semigroup Grow where Grow x <> Grow y = Grow $ x . y
+
+step :: Grow
+step = Grow (Map.fromListWith (+) . concatMap step' . Map.assocs)
   where 
     step' (0,n) = [(6,n), (8,n)]
     step' (t,n) = [(t-1,n)]
 
+afterSteps :: [Int] -> Int -> Int
+afterSteps fs count = sum $ (grow $ count `stimes` step) $ freq fs
 
 ------------ PART A ------------
 partA :: Input -> Int
-partA fs = counts fs !! 80
+partA fs = fs `afterSteps` 80
 
 
 ------------ PART B ------------
 partB :: Input -> Int
-partB fs = counts fs !! 256
+partB fs = fs `afterSteps` 256
