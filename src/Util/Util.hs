@@ -26,7 +26,7 @@ mapFromNestedLists = Map.fromList . attachCoords 0 0
   where
     attachCoords _ _ [] = []
     attachCoords x _ ([] : ls) = attachCoords (x + 1) 0 ls
-    attachCoords x y ((l : ls) : lss) = ((x, y), l) : (attachCoords x (y + 1) (ls : lss))
+    attachCoords x y ((l : ls) : lss) = ((x, y), l) : attachCoords x (y + 1) (ls : lss)
 
 -- Splits a list into chunks of the specified size.
 -- The final chunk may be smaller than the chunk size.
@@ -36,7 +36,7 @@ chunksOf n ls
   | n <= 0 = error "Cannot split into chunks of negative length."
   | null ls = []
   | length ls < n = [ls]
-  | otherwise = (take n ls) : (chunksOf n (drop n ls))
+  | otherwise = take n ls : chunksOf n (drop n ls)
 
 -- Splits a list into maximal contiguous chunks that satisfy the given predicate.
 -- For example:
@@ -48,8 +48,8 @@ chunksByPredicate p ls
   | otherwise =
     let (prefix, rest) = span p ls
      in if null prefix
-          then (chunksByPredicate p $ dropWhile (not . p) rest)
-          else prefix : (chunksByPredicate p $ dropWhile (not . p) rest)
+          then chunksByPredicate p $ dropWhile (not . p) rest
+          else prefix : chunksByPredicate p (dropWhile (not . p) rest)
 
 -- Allows the user to log out some context and then the result of some expression
 -- For example, supposing a is 2, and b is 5:
@@ -63,7 +63,7 @@ traceShowIdWithContext context result = trace (show context ++ "\t" ++ show resu
 list !!? index =
   if
       | index < 0 -> Nothing
-      | index >= (length list) -> Nothing
+      | index >= length list -> Nothing
       | otherwise -> Just $ list !! index
 
 -- Given a map where the keys are co-ordinates, returns the minimum x, maximum x, minimum y, and maximum y; in that order.

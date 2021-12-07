@@ -19,7 +19,7 @@ import Data.Ord (comparing)
 
 import Debug.Trace
 
-import {- # EXTREMELY_CURSED # -} Control.Arrow ((&&&), (>>>))
+import Control.Arrow ((&&&), (>>>))
 import Data.Bifunctor
 {- ORMOLU_ENABLE -}
 
