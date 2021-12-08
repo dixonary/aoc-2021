@@ -5,7 +5,6 @@ import Data.List
 import Data.Map.Strict (Map)
 import qualified Data.Map.Strict as Map
 import Data.Maybe
-import Data.Set (Set)
 import qualified Data.Set as Set
 import Data.Vector (Vector)
 import qualified Data.Vector as Vec
@@ -17,7 +16,7 @@ import Data.Attoparsec.Text
 import Data.Void
 import Control.Monad (guard)
 import Data.Function
-import Data.Set (size)
+import Data.Set (Set, size)
 import Data.Set.Unicode ((∩))
 {- ORMOLU_ENABLE -}
 
