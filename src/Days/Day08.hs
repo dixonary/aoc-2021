@@ -51,6 +51,8 @@ partB = sum . map decode
       Map.insert i d assg
       | assg <- getCode is
       , d    <- [0..9] \\ Map.elems assg
+      -- Our choice of d only makes sense if that digit would have the same 
+      -- number of segments lit as the indicator.
       , Set.size (segs d) == length i
       -- The number of shared segments between all pairs of digits must
       -- be preserved by our mapping.
