@@ -32,6 +32,7 @@ dependencies:
 - vector
 - pointedlist
 - monad-loops
+- containers-unicode-symbols
 
 library:
   source-dirs: src
