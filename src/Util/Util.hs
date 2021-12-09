@@ -103,6 +103,9 @@ third3 f (a, b, c) = (a, b, f c)
 uncurry3 :: (a -> b -> c -> d) -> (a, b, c) -> d
 uncurry3 f (a, b, c) = f a b c
 
+hammingDist :: (Int,Int) -> (Int,Int) -> Int 
+hammingDist (a,b) (x,y) = abs (x-a) + abs (y-b)
+
 -- Lists
 
 isSingleton :: [a] -> Bool
