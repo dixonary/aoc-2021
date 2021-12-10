@@ -36,8 +36,8 @@ partA = sum . map (score.head.fst) . filter (not.isIncomplete)
 tryParse :: (String, String) -> (String, String)
 tryParse ([], s) = ([], s)
 tryParse (x:xs, s)
-  | isOpen x = tryParse (xs, x:s)
-  | otherwise = case s of
+  | x `Map.member` pairs = tryParse (xs, x:s)
+  | otherwise            = case s of
       s:ss | pairs ! s == x -> tryParse (xs, ss)
       _                     -> (x:xs, s)
 
@@ -46,9 +46,6 @@ isIncomplete = null.fst
 
 pairs :: Map Char Char
 pairs = Map.fromList $ zip "([{<" ")]}>"
-
-isOpen :: Char -> Bool
-isOpen = (`Map.member` pairs)
 
 score :: Char -> Int
 score ')' = 3
