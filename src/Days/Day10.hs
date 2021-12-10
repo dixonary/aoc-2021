@@ -38,9 +38,8 @@ tryParse ([], s) = ([], s)
 tryParse (x:xs, s)
   | isOpen x = tryParse (xs, x:s)
   | otherwise = case s of
-      [] -> (x:xs, [])
       s:ss | pairs ! s == x -> tryParse (xs, ss)
-      _ -> (x:xs, s)
+      _                     -> (x:xs, s)
 
 isIncomplete :: PartialParse -> Bool
 isIncomplete = null.fst
