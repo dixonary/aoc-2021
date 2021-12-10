@@ -2,7 +2,7 @@ module Days.Day10 (runDay) where
 
 {- ORMOLU_DISABLE -}
 import Data.List
-import Data.Map.Strict (Map)
+import Data.Map.Strict (Map, (!))
 import qualified Data.Map.Strict as Map
 import Data.Maybe
 import Data.Set (Set)
@@ -39,17 +39,17 @@ tryParse (x:xs, s)
   | isOpen x = tryParse (xs, x:s)
   | otherwise = case s of
       [] -> (x:xs, [])
-      s:ss | s == paired x -> tryParse (xs, ss)
+      s:ss | pairs ! s == x -> tryParse (xs, ss)
       _ -> (x:xs, s)
 
 isIncomplete :: PartialParse -> Bool
 isIncomplete = null.fst
 
-isOpen :: Char -> Bool
-isOpen = (`elem` ("{[<("::String))
+pairs :: Map Char Char
+pairs = Map.fromList $ zip "([{<" ")]}>"
 
-paired :: Char -> Char
-paired = (Map.fromList (zip "}]>)" "{[<(") Map.!)
+isOpen :: Char -> Bool
+isOpen = (`Map.member` pairs)
 
 score :: Char -> Int
 score ')' = 3
@@ -64,7 +64,7 @@ score '<' = 4
 ------------ PART B ------------
 partB :: Input -> Int
 partB = median
-        . map (foldl1' (\a x -> a*5+x) . map score .snd)
+        . map (foldl1' (\a x -> a*5+x) . map score . snd)
         . filter isIncomplete
   where 
     median xs = sort xs !! (length xs `div` 2)
