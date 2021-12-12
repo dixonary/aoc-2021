@@ -66,23 +66,15 @@ getPaths b e = \case
     getPaths e' b' (y:p)
   where
     upd :: Bool -> Input -> [Cave] -> (Bool, Input)
-    upd True e (y:p)
-      -- Once we double a small node, remove its edges and edges to singles
+    upd allowDouble e (y:p) = case allowDouble of
+      -- Once we double a small node, remove in-edges to all visited smalls
       -- Then switch to "singles only" mode
-      | isSmall y && count (==y) p == 1
-          = (False,)
-          $ foldr (fmap.delete) e
-          $ Map.keys
-          $ Map.filterWithKey (\k v -> isSmall k && v >= 1)
-          $ freq (y:p)
-      -- If we didn't double, carry on as normal
-      | otherwise = (True, e)
-      
-    upd False e (y:p)
-      -- Remove edges to singly visited small node
-      | isSmall y = (False, delete y <$> e)
-      -- Do nothing
-      | otherwise = (False, e)
+      True  | isSmall y && y `elem` p
+                        -> (False, foldr (fmap.delete) e $ filter isSmall p)
+      -- In singles mode, remove in-edges to any visited node
+      False | isSmall y -> (False, delete y <$> e)
+      -- In all other cases, we're good
+      b                 -> (b, e)
 
 ------------ PART B ------------
 partB :: Input -> Int
