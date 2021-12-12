@@ -22,6 +22,8 @@ import Util.Pair
 import Data.Text (Text)
 import qualified Data.Text as Text
 import Data.Monoid
+import Data.Tuple (swap)
+import Data.Bifunctor (Bifunctor(second))
 {- ORMOLU_ENABLE -}
 
 runDay :: R.Day
@@ -37,52 +39,51 @@ inputParser = do
         , Large <$> takeWhile1 isUpper
         ]
   xs <- cave `around` char '-' `sepBy` space
-  let caves = map fst xs <> map snd xs
-  pure (Set.fromList caves, Set.fromList xs)
+  pure
+    $ fmap (delete Start) -- Reject inbound edges to Start
+    $ Map.delete End      -- Reject outbound edges from End
+    $ Map.fromListWith (<>) $ map (second pure) $ xs <> map swap xs
 
 ------------ TYPES ------------
-type Input = (Set Cave, Set Tunnel)
+type Input = (Map Cave [Cave]) -- Adjacency List
 
 data Cave = Start | End | Small Text | Large Text
-  deriving (Eq, Ord)
-type Tunnel = (Cave,Cave)
+  deriving (Eq, Ord, Show)
 
-instance Show Cave where
-  show = \case { Start -> "start";         End   -> "end";
-                 Small t -> Text.unpack t; Large t -> Text.unpack t }
-instance {-# OVERLAPS #-} Show Tunnel where
-  show (x,y) = show x <> "-" <> show y
-
-isLarge, isSmall, isEnd :: Cave -> Bool
-isLarge = \case { Large _ -> True; _ -> False }
+isSmall :: Cave -> Bool
 isSmall = \case { Small _ -> True; _ -> False }
-isEnd   = \case { Start -> True; End -> True; _ -> False }
 
 ------------ PART A ------------
 partA :: Input -> Int
-partA g = length $ getPaths g cond [Start]
-  where 
-    cond = and . Map.mapWithKey (\k v -> isLarge k || v<2) . freq
+partA e = length $ getPaths False e [Start]
 
-getPaths :: Input -> ([Cave] -> Bool) -> [Cave] -> [[Cave]]
-getPaths (v,e) cond = \case
+getPaths :: Bool -> Input -> [Cave] -> [[Cave]]
+getPaths b e = \case
   p@(End:_) -> [p]
-  p@(x  :_) -> getPaths (v,e) cond =<<
-    [y:p 
-    | y <- Set.toList v
-    , (x,y) `elem` e || (y,x) `elem` e
-    , cond (y:p)
-    ]
+  p@(x  :_) -> do
+    y <- e !@ x
+    let (e', b') = upd b e (y:p) 
+    getPaths e' b' (y:p)
+  where
+    upd :: Bool -> Input -> [Cave] -> (Bool, Input)
+    upd True e (y:p)
+      -- Once we double a small node, remove its edges and edges to singles
+      -- Then switch to "singles only" mode
+      | isSmall y && count (==y) p == 1
+          = (False,)
+          $ foldr (fmap.delete) e
+          $ Map.keys
+          $ Map.filterWithKey (\k v -> isSmall k && v >= 1)
+          $ freq (y:p)
+      -- If we didn't double, carry on as normal
+      | otherwise = (True, e)
+      
+    upd False e (y:p)
+      -- Remove edges to singly visited small node
+      | isSmall y = (False, delete y <$> e)
+      -- Do nothing
+      | otherwise = (False, e)
 
 ------------ PART B ------------
 partB :: Input -> Int
-partB g@(v,e) = length $ getPaths g cond [Start]
-  where 
-    cond p = let 
-      f = freq p
-      vs = Set.toList v
-      getWhere c = mapMaybe (f Map.!?) $ filter c $ Set.toList v
-      in
-      count (==2) (getWhere isSmall) <= 1 &&
-      count (> 2) (getWhere isSmall) == 0 &&
-      count (> 1) (getWhere isEnd)   == 0
+partB e = length $ getPaths True e [Start]
