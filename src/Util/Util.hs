@@ -134,3 +134,9 @@ range x y = if y >= x then [x..y] else [x,x-1..y]
 -- FUNCTIONS
 fpow :: (a -> a) -> Int -> a -> a
 fpow f n = foldr1 (.) $ replicate n f
+
+(!@) :: (Ord k, Monoid a) => Map k a -> k -> a
+(!@) = flip (Map.findWithDefault mempty)
+
+count :: (a -> Bool) -> [a] -> Int
+count p xs = length $ filter p xs
