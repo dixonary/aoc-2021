@@ -44,10 +44,9 @@ type Polymer = Map (Char, Char) Int
 type Rules   = Map (Char, Char) Char
 
 step :: Rules -> Polymer -> Polymer
-step r p = Map.fromListWith (+) $ Map.assocs p >>= insert
-  where
-  insert ((a,b),count) = map (,count) 
-    $ case r Map.!? (a,b) of { Nothing -> [(a,b)]; Just c -> [(a,c),(c,b)] }
+step r p = Map.fromListWith (+) $ Map.assocs p >>= uncurry insert 
+  where insert (a,b) c = (,c) <$> get r (a,b)
+        get  r (a,b)   = maybe [(a,b)] (\c -> [(a,c),(c,b)]) $ r Map.!? (a,b)
 
 compute :: Int -> Polymer -> Rules -> Int
 compute n p r = getCount $ step r `fpow` n $ p
@@ -55,10 +54,9 @@ compute n p r = getCount $ step r `fpow` n $ p
   -- This function takes the max total occurrences of every letter
   -- in first OR second position (to cover the final letter)
   -- then gets the max and min occurrences of that and takes the difference.
-  getCount p = uncurry (-)
-             $ (maximum &&& minimum)
+  getCount p = (\m -> maximum m - minimum m)
              $ uncurry (Map.unionWith max)
-             $ ((&&&) `on` Map.mapKeysWith (+)) fst snd p
+             $ (Map.mapKeysWith (+) fst &&& Map.mapKeysWith (+) snd) p
 
 ------------ PART A ------------
 -- partA :: Input -> 
