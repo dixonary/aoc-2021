@@ -33,6 +33,7 @@ dependencies:
 - pointedlist
 - monad-loops
 - containers-unicode-symbols
+- fgl
 
 library:
   source-dirs: src
