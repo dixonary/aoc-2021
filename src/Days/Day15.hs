@@ -56,9 +56,9 @@ getShortestPath cave = fromJust $ spLength (ix (l,t)) (ix (r,b)) g
 partB :: Input -> Int
 partB cave = getShortestPath bigCave
   where 
-    (l,r,t,b) = mapBoundingBox cave
+    (_,r,_,b) = mapBoundingBox cave
     
-    bigCave = Map.unions $ uncurry allPositions <$> Map.assocs cave
+    bigCave = Map.foldMapWithKey allPositions cave
 
     allPositions (x,y) w = Map.fromList
       [((x+(r+1)*n, y+(b+1)*m), (w+m+n-1)`mod`9+1) | m <- [0..4], n <- [0..4]]
