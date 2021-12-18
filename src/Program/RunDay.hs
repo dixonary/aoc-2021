@@ -1,5 +1,3 @@
-{-# LANGUAGE TypeApplications #-}
-
 module Program.RunDay (runDay, Day, Verbosity (Quiet, Timings, Verbose)) where
 
 import Control.Exception (SomeException, catch)
