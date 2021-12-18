@@ -57,12 +57,10 @@ packetP = do
         case lt of
           0 -> do
             len <- binary 15
-            Operator o . parseErr (many packetP)
-              <$> Parser.take len
+            Operator o . parseErr (many packetP) <$> Parser.take len
           1 -> do
             len <- binary 11
-            Operator o
-              <$> count len packetP
+            Operator o <$> count len packetP
 
 binary :: Int -> Parser Int
 binary n = foldl1' (\r x -> r*2+x) <$> count n (("0" $> 0) <|> ("1" $> 1))
