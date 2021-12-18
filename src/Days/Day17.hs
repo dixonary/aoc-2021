@@ -16,6 +16,7 @@ import qualified Program.RunDay as R (runDay, Day)
 import Data.Attoparsec.Text hiding (takeWhile, take)
 import Data.Void
 import Debug.Trace
+import Data.Biapplicative (biliftA2)
 {- ORMOLU_ENABLE -}
 
 runDay :: R.Day
@@ -35,7 +36,7 @@ partA = maximum . getHeights
 getHeights :: Input -> [Int]
 getHeights i@((_,r), (b,_))
   = mapMaybe (doTrace i 0 . steps)
-  $ (,) <$> (negate (abs r) ... abs r) <*> (negate (abs b) ... abs b)
+  $ (,) <$> (0 ... abs r) <*> (negate (abs b) ... abs b)
 
 doTrace :: Input -> Int -> [(Int, Int)] -> Maybe Int
 doTrace ((l,r), (b,t)) = doTrace'
@@ -49,7 +50,7 @@ velStep :: (Ord a, Num a, Num b) => (a, b) -> (a, b)
 velStep (vx,vy) = (signum vx * max 0 (abs vx - 1), vy - 1)
 
 steps :: (Int, Int) -> [(Int, Int)]
-steps = scanl' (\(x,y) (vx,vy) -> (x+vx, y+vy)) (0,0) . iterate velStep
+steps = scanl' (biliftA2 (+) (+)) (0,0) . iterate velStep
 
 ------------ PART B ------------
 partB :: Input -> Int
