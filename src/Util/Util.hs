@@ -5,6 +5,7 @@ import Data.Map.Strict (Map)
 import qualified Data.Map.Strict as Map
 import Debug.Trace (trace)
 import Data.Bifunctor
+import Control.Monad (when)
 {- ORMOLU_ENABLE -}
 
 {-
@@ -140,3 +141,10 @@ fpow f n = foldr1 (.) $ replicate n f
 
 count :: (a -> Bool) -> [a] -> Int
 count p xs = length $ filter p xs
+
+-- Monads
+
+-- | Monadic version of @when@, taking the condition in the monad
+whenM :: Monad m => m Bool -> m () -> m ()
+whenM mb thing = do { b <- mb
+                    ; when b thing }
