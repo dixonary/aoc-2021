@@ -3,6 +3,7 @@ module Util.Parsers where
 import Data.Attoparsec.Text
 import Data.Map (Map)
 import qualified Data.Map as Map
+import Data.Text
 
 {-
 This module contains a list of parsers and combinators which are likely to be useful for Advent of Code problems.
@@ -35,3 +36,7 @@ around p sep = do
   sep
   b <- p
   return (a, b)
+
+-- | Will always parse successfully, or throw a runtime error.
+parseErr :: Parser a -> Text -> a
+parseErr p = either error id . parseOnly p
