@@ -63,11 +63,11 @@ buildMap (s:ss) = buildMap' (s,[(0,0,0)]) $ indexed1 ss
       Just (n,m',sc') = asum $ do
         s           <- ss
         (n, coords) <- alignmentsIxed s
-        kk@(k:_)    <- takeWhile ((>=12) . length) $ tails $ Set.toList m
+        kk          <- takeWhile ((>=12) . length) $ iterate (Set.drop 1) m
         cc@(c:_)    <- takeWhile ((>=12) . length) $ tails $ Set.toList coords
-        let cΔ  = c `sub3` k
-            kk' = Set.fromList kk
-            cc' = filter (`Set.member` kk') $ map (`sub3` cΔ) cc
+        let cΔ  = c `sub3` Set.findMin kk
+            -- kk' = Set.fromList kk
+            cc' = filter (`Set.member` kk) $ map (`sub3` cΔ) cc
         pure $ if length (take 12 cc') == 12
           then Just (n, m `Set.union` Set.map (`sub3` cΔ) coords, cΔ)
           else Nothing
