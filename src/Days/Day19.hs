@@ -15,7 +15,7 @@ import Util.Util as U
 import Util.Parsers as U
 
 import qualified Program.RunDay as R (runDay, Day)
-import Data.Attoparsec.Text hiding (takeWhile)
+import Data.Attoparsec.Text hiding (take, takeWhile)
 import Data.Void
 import Debug.Trace
 import Data.Text (Text)
@@ -60,20 +60,17 @@ buildMap (s:ss) = buildMap' (s,[(0,0,0)]) $ indexed1 ss
     buildMap' :: (Territory,[Coord]) -> [Indexed Scanner] -> (Territory,[Coord])
     buildMap' (m,sc) [] = (m,sc)
     buildMap' (m,sc) ss = let
-
       Just (n,m',sc') = asum $ do
         s           <- ss
         (n, coords) <- alignmentsIxed s
         kk@(k:_)    <- takeWhile ((>=12) . length) $ tails $ Set.toList m
         cc@(c:_)    <- takeWhile ((>=12) . length) $ tails $ Set.toList coords
-        let cΔ = c `sub3` k
+        let cΔ  = c `sub3` k
             kk' = Set.fromList kk
             cc' = filter (`Set.member` kk') $ map (`sub3` cΔ) cc
-        pure $ case cc' of
-          (_:_:_:_:_:_:_:_:_:_:_:_:_) -- at least 12 elements
-            -> Just (n, m `Set.union` Set.map (`sub3` cΔ) coords, cΔ)
-          _ -> Nothing
-
+        pure $ if length (take 12 cc') == 12
+          then Just (n, m `Set.union` Set.map (`sub3` cΔ) coords, cΔ)
+          else Nothing
       in buildMap'
           (m', sc' : sc)
           (trace ("Adding scanner " <> show n) $ filter ((/= n) . fst) ss)
