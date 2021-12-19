@@ -107,6 +107,9 @@ uncurry3 f (a, b, c) = f a b c
 hammingDist :: (Int,Int) -> (Int,Int) -> Int 
 hammingDist (a,b) (x,y) = abs (x-a) + abs (y-b)
 
+hammingDist3 :: (Int,Int,Int) -> (Int,Int,Int) -> Int 
+hammingDist3 (a,b,c) (x,y,z) = abs (x-a) + abs (y-b) + abs (z-c)
+
 -- Lists
 
 isSingleton :: [a] -> Bool
