@@ -95,6 +95,7 @@ transform (x,y,z) = pure (x,y,z) >>= rots X >>= rots Y >>= rots Z & nub
             Z -> ((,,z), x,y)
       uncurry comb <$> [(r1,r2), (r2,-r1), (-r1, -r2), (-r2,r1)]
 
+-- Transpose a set of lists into a list of sets.
 tSet :: Ord a => Set [a] -> [Set a]
 tSet = fmap Set.fromList
      . transpose
