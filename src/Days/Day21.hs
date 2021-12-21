@@ -9,6 +9,8 @@ import Data.Set (Set)
 import qualified Data.Set as Set
 import Data.Vector (Vector)
 import qualified Data.Vector as Vec
+import qualified Data.Vector.Unboxed.Mutable as MVec
+import Data.Vector.Unboxed.Mutable (STVector)
 import Util.Util as U
 
 import qualified Program.RunDay as R (runDay, Day)
@@ -19,6 +21,7 @@ import Data.Biapplicative
 import Control.Applicative
 import Data.STRef
 import Control.Monad.ST
+import Data.Int (Int64)
 {- ORMOLU_ENABLE -}
 
 runDay :: R.Day
@@ -39,7 +42,7 @@ type TurnState = (Turn, Int, [Int], [Int], [Int], Int, Int)
 detDie :: [Int]
 detDie = cycle [1..100]
 
-diracDist :: [(Int, Integer)]
+diracDist :: [(Int, Int64)]
 diracDist = [(3,1), (4, 3), (5,6), (6,7), (7,6), (8,3), (9,1)]
 
 places :: [Int]
@@ -63,29 +66,35 @@ partA (i1, i2) =
     , 0, 0)
 
 ------------ PART B ------------
-partB :: Input -> Integer
-partB (a,b) = uncurry max $ victories (One, a, b, 21, 21)
+partB :: Input -> Int64
+partB (a,b) = uncurry max $ victories (a, b, 21)
 
-victories :: (Turn, Int, Int, Int, Int) -> (Integer, Integer)
-victories (t, p1, p2, s1, s2) = runST $ do
-  m <- newSTRef (Map.empty :: Map (Turn, Int, Int, Int, Int) (Integer, Integer))
+victories :: (Int, Int, Int) -> (Int64, Int64)
+victories (p1, p2, playTo) = runST $ do
+  m <- MVec.replicate (10 * 10 * playTo * playTo * 2) (-1 :: Int64)
   let 
-    v (t, p1, p2, s1, s2)
-      | t == Two && s1 <= 0 = pure (1,0)
-      | t == One && s2 <= 0 = pure (0,1)
+    v t@(p1, p2, s1, s2)
+      | s2 <= 0 = pure (0, 1)
       | otherwise = do
-          mm <- readSTRef m
-          case Map.lookup (t, p1, p2, s1, s2) mm of
-            Just x -> pure x
-            Nothing -> do
-              (w1,w2) <- fmap sum2 $ sequence $ do
+
+          let i = (2*) $ (p1-1) * playTo * playTo * 10
+                       + (p2-1) * playTo * playTo
+                       +  s1    * playTo
+                       +  s2
+
+          (,) <$> MVec.unsafeRead m i <*> MVec.unsafeRead m (i+1) >>= \case
+            (-1,-1) -> do
+              (w2,w1) <- fmap sum2 $ sequence $ do
                 (roll, count) <- diracDist
                 let
                   addRoll p = (p + roll - 1) `mod` 10 + 1
-                  m' = case t of
-                    One -> let p' = addRoll p1 in (Two, p', p2, s1 - p', s2)
-                    Two -> let p' = addRoll p2 in (One, p1, p', s1, s2 - p')
+                  m' = let p' = addRoll p1 in (p2, p', s2, s1 - p')
                 pure $ both (*count) <$> v m'
-              modifySTRef m (Map.insert (t, p1, p2, s1, s2) (w1,w2))
+
+              MVec.unsafeWrite m i w1
+              MVec.unsafeWrite m (i+1) w2
               pure (w1, w2)
-  v (t, p1, p2, s1, s2)
+
+            (a,b) -> (a,) <$> MVec.unsafeRead m (i+1)
+
+  v (p1, p2, playTo, playTo)
