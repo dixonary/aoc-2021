@@ -70,19 +70,19 @@ partB (a,b) = uncurry max $ victories (a, b, 21)
 
 victories :: (Int, Int, Int) -> (Int, Int)
 victories (p1, p2, playTo) = runST $ do
-  m <- MVec.replicate (10 * 10 * playTo * playTo * 2) (-1)
+  m <- MVec.replicate (10 * 10 * playTo * playTo) (-1,-1)
   let 
     v t@(p1, p2, s1, s2)
       | s2 <= 0 = pure (0, 1)
       | otherwise = do
 
-          let i = (2*) $ (p1-1) * playTo * playTo * 10
-                       + (p2-1) * playTo * playTo
-                       +  s1    * playTo
-                       +  s2
+          let i = (p1-1) * playTo * playTo * 10
+                + (p2-1) * playTo * playTo
+                +  s1    * playTo
+                +  s2
 
-          (,) <$> MVec.unsafeRead m i <*> MVec.unsafeRead m (i+1) >>= \case
-            (-1,_) -> do
+          MVec.unsafeRead m i >>= \case
+            (-1,-1) -> do
               (w2,w1) <- fmap sum2 $ sequence $ do
                 (roll, count) <- diracDist
                 let
@@ -90,8 +90,7 @@ victories (p1, p2, playTo) = runST $ do
                   m' = let p' = addRoll p1 in (p2, p', s2, s1 - p')
                 pure $ both (*count) <$> v m'
 
-              MVec.unsafeWrite m i w1
-              MVec.unsafeWrite m (i+1) w2
+              MVec.unsafeWrite m i (w1,w2)
               pure (w1, w2)
 
             (a,b) -> pure (a,b)
