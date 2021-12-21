@@ -66,10 +66,10 @@ partA (i1, i2) =
 
 ------------ PART B ------------
 partB :: Input -> Int
-partB (a,b) = uncurry max $ victories (a, b, 21)
+partB = uncurry max . victories 21
 
-victories :: (Int, Int, Int) -> (Int, Int)
-victories (p1, p2, playTo) = runST $ do
+victories :: Int -> (Int, Int) -> (Int, Int)
+victories playTo (p1, p2) = runST $ do
   m <- MVec.replicate (10 * 10 * playTo * playTo) (-1,-1)
   let 
     v t@(p1, p2, s1, s2)
