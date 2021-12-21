@@ -6,6 +6,8 @@ import qualified Data.Map.Strict as Map
 import Debug.Trace (trace)
 import Data.Bifunctor
 import Control.Monad (when)
+import Data.Foldable
+import Data.Biapplicative
 {- ORMOLU_ENABLE -}
 
 {-
@@ -85,6 +87,8 @@ converge = until =<< ((==) =<<)
 pairWith :: (a -> b) -> [a] -> [(a,b)]
 pairWith f = fmap (\x -> (x,f x))
 
+sum2 :: (Num a, Foldable f) => f (a,a) -> (a,a)
+sum2 = foldl' (biliftA2 (+) (+)) (0,0)
 
 pair :: a -> (a,a)
 pair x = (x,x) 
@@ -151,3 +155,4 @@ count p xs = length $ filter p xs
 whenM :: Monad m => m Bool -> m () -> m ()
 whenM mb thing = do { b <- mb
                     ; when b thing }
+
