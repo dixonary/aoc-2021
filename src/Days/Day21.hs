@@ -83,7 +83,7 @@ victories (p1, p2, playTo) = runST $ do
                        +  s2
 
           (,) <$> MVec.unsafeRead m i <*> MVec.unsafeRead m (i+1) >>= \case
-            (-1,-1) -> do
+            (-1,_) -> do
               (w2,w1) <- fmap sum2 $ sequence $ do
                 (roll, count) <- diracDist
                 let
@@ -95,6 +95,6 @@ victories (p1, p2, playTo) = runST $ do
               MVec.unsafeWrite m (i+1) w2
               pure (w1, w2)
 
-            (a,b) -> (a,) <$> MVec.unsafeRead m (i+1)
+            (a,b) -> pure (a,b)
 
   v (p1, p2, playTo, playTo)
