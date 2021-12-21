@@ -21,7 +21,6 @@ import Data.Biapplicative
 import Control.Applicative
 import Data.STRef
 import Control.Monad.ST
-import Data.Int (Int64)
 {- ORMOLU_ENABLE -}
 
 runDay :: R.Day
@@ -42,7 +41,7 @@ type TurnState = (Turn, Int, [Int], [Int], [Int], Int, Int)
 detDie :: [Int]
 detDie = cycle [1..100]
 
-diracDist :: [(Int, Int64)]
+diracDist :: [(Int, Int)]
 diracDist = [(3,1), (4, 3), (5,6), (6,7), (7,6), (8,3), (9,1)]
 
 places :: [Int]
@@ -66,12 +65,12 @@ partA (i1, i2) =
     , 0, 0)
 
 ------------ PART B ------------
-partB :: Input -> Int64
+partB :: Input -> Int
 partB (a,b) = uncurry max $ victories (a, b, 21)
 
-victories :: (Int, Int, Int) -> (Int64, Int64)
+victories :: (Int, Int, Int) -> (Int, Int)
 victories (p1, p2, playTo) = runST $ do
-  m <- MVec.replicate (10 * 10 * playTo * playTo * 2) (-1 :: Int64)
+  m <- MVec.replicate (10 * 10 * playTo * playTo * 2) (-1)
   let 
     v t@(p1, p2, s1, s2)
       | s2 <= 0 = pure (0, 1)
