@@ -35,6 +35,8 @@ dependencies:
 - containers-unicode-symbols
 - fgl
 - bifunctors
+- unordered-containers
+- hashable
 
 library:
   source-dirs: src
