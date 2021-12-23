@@ -47,6 +47,19 @@ around3 p sep = do
   sep
   c <- p
   return (a, b, c)
+  
+-- Takes a parser and a separator. Parses one instance of the parser before the separator and one afterwards, returning the parsed values as a pair.
+around4 :: Parser a -> Parser b -> Parser (a, a, a, a)
+around4 p sep = do
+  a <- p
+  sep
+  b <- p
+  sep
+  c <- p
+  sep
+  d <- p
+  return (a, b, c, d)
+
 
 -- | Will always parse successfully, or throw a runtime error.
 parseErr :: Parser a -> Text -> a
